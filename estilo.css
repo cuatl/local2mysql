@@ -1,0 +1,15 @@
+body {
+   font-family:sans-serif;
+   font-size:1em;
+   color:#333;
+}
+nav { 
+   text-align:center;
+}
+nav button {
+   font-size:1.1em;
+   border:1px solid #ddd;
+   background:#fff;
+   border-radius:5px;
+   padding:5px 10px;
+}
