@@ -7,14 +7,44 @@
       <meta name="author" content="Jorge Martínez Mauricio">
       <link rel="publisher" href="https://plus.google.com/+JorgeMart%C3%ADnezMauricio" />
       <link rel="stylesheet" href="estilo.css">
+      <script src="jquery.min.js"></script>
+      <script src="local.js"></script>
       <title>local2mysql</title>
    </head>
    <body>
-      <nav>
-      <button class="inicio">inicio</button>
-      <button class="datos">datos</button>
-      <button class="sync">sincronizar</button>
+      <div class="container">
+         <nav>
+         <button class="boton" id="inicio">inicio</button>
+         <button class="boton" id="datos">datos</button>
+         <button class="boton" id="sync">sincronizar</button>
       </ul>
       </nav>
-   </body>
+
+      <div id="inicioC" class="contenido">
+         inicio -- almacenar algún dato
+         <table class="table">
+            <tr>
+               <td>nombre</td>
+               <td><input type="text" name="nombre" value="" required /></td>
+            </tr>
+            <tr>
+               <td>correo electrónico</td>
+               <td><input type="email" name="correo" value="" required /></td>
+            </tr>
+            <tr>
+               <td>nacimiento</td>
+               <td><input type="date" name="nacimiento" value="" /></td>
+            </tr>
+         </table>
+         <p class="text-center"><button class="boton" id="dosave">almacenar datos</button></p>
+      </div>
+      <div id="datosC" class="contenido">
+         datos
+      </div>
+      <div id="syncC" class="contenido">
+         sincronizar
+      </div>
+
+   </div>
+</body>
 </html>
