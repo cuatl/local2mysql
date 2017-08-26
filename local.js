@@ -41,8 +41,7 @@ var escribeDB = function() {
          console.log('item '+item+' es requerido! ');
       }
    });
-   console.log(mensaje);
-   console.log(':)');
+   if(mensaje!='') $("#estado").html(mensaje);
    //var tr = db.transaction(["datos"],"readwrite");
    //var store = transaction.objectStore("datos");
 }
