@@ -19,6 +19,7 @@ var inicio = function() {
    console.log('portada');
    muestra("#inicioC");
 }
+/* carga los datos almacenados localmente {{{ */
 var cargaDatos = function() {
    console.log('carga datos');
    muestra("#datosC");
@@ -38,23 +39,71 @@ var cargaDatos = function() {
             tmp += '<td>'+cursor.value.correo+'</td>';
             tmp += '<td>'+cursor.value.nacimiento+'</td>';
             tmp += '<td>'+cursor.value.sincronizado+'</td>';
+            tmp += '<td>'+cursor.value.fecha+'</td>';
          tmp += '</tr>';
          botija.append(tmp);
          cursor.continue();
       }
    }
 }
+/* }}} */
 var syncMe= function() {
    console.log('sincroniza a internet');
    muestra("#syncC");
+   //
+   var res = db.transaction(["datos"],"readonly").objectStore("datos");
+   //console.log(res);
+   res.openCursor().onsuccess = function(e) {
+      var cursor = e.target.result;
+      if(cursor) {
+         if(cursor.value.sincronizado == '0' && navigator.onLine) {
+            console.log('aaa');
+            $("#estado").html('Enviando datos ');
+            var orig = cursor.value;
+            var oo = cursor;
+            $.post("https://tar.mx/apps/local2mysql/api.php", { data: cursor.value } ,function(m) {
+               console.log(m);
+               if(m.id) {
+                  $("#estado").append(m.lid+'=ok! ');
+                  //updateID(m.lid, m);
+                  //almacenamos
+                  orig.sincronizado = m.id;
+                  orig.fecha = m.fecha;
+                  updateID(m.lid,orig);
+               } else {
+                  console.log('error db remota '+m.error);
+                  $("#estado").html('error db remota '+m.error);
+               }
+            },'jsonp');
+            cursor.continue();
+         } else if(cursor) {
+            cursor.continue();
+         } else if(cursor.value.sincronizado == 0 && !navigator.onLine) {
+            $("#estado").html('ERROR parece que no tiene internet');
+         }
+      } else {
+         $("#estado").html('todo ok');
+      }
+   }
+}
+var updateID = function(id, update) {
+   var rex = db.transaction(["datos"],"readwrite").objectStore("datos");
+   var request = rex.get(id);
+   request.onsuccess = function(event) {
+      var ru = rex.put(update);
+      ru.onsuccess = function(ee) {
+         console.log(ee);
+      }
+      ru.onerror = function(ee) {
+         console.log('no se pudo actualizar localmente');
+      }
+   }
 }
 var muestra = function(que) { 
    $(".contenido").hide(); $(que).show(); 
    $("#estado").html('');
 }
-/*
-* inserta un nuevo dato
-*/
+/* * inserta un nuevo dato {{{ */
 var escribeDB = function() {
    //comprobamos que estén llenos los datos, aqui inicialmente están "hardcoded" nombre, correo, nacimiento:
    var datos = ['nombre','correo','nacimiento'];
@@ -85,10 +134,14 @@ var escribeDB = function() {
       }
       req.onsuccess = function(e) {
          $("#estado").html('se almacenaron los datos :>');
-         console.log(e);
+         //limpiamos
+         $.each(datos,function(i,item) {
+            $('input[name="'+item+'"]').val('');
+         });
       }
    }
 }
+/* }}} */
 /* * {{{ generaDB, crea la db por primera vez o cuando se cambia de versión (1 inicial)
 */
 var generaDB = function() {
